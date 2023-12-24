@@ -1,38 +1,25 @@
 "use client"
 import { graphQLClient } from '@/clients/api';
+import AddTweet from '@/components/AddTweet';
+import GoogleLoginBtn from '@/components/GoogleLoginBtn';
 import SideBar from '@/components/SideBar';
 import TweetCard from '@/components/TweetCard';
-import { verifyGoogleToken, verifyUserGoogleToken } from '@/graphql/query/user';
+import { Tweet } from '@/gql/graphql';
+import { verifyUserGoogleToken } from '@/graphql/query/user';
+import { useGetAllTweets } from '@/hooks/tweet';
+import { useCurrentUser } from '@/hooks/user';
 import {CredentialResponse, GoogleLogin} from "@react-oauth/google"
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback } from 'react';
 import toast from 'react-hot-toast';
 
 
 export default function Home() {
-  const handleLogin = useCallback(async (cred: CredentialResponse) => {
-    const googleToken = cred.credential
-    if(!googleToken){
-      return toast.error("Token not found")
-    }
-    const {verifyGoogleToken} = await graphQLClient.request(verifyUserGoogleToken, {token: googleToken})
-    toast.success('Logged In')
-    if(verifyGoogleToken){
-      localStorage.setItem("twitter_clone", verifyGoogleToken)
-    }
-    console.log("aaaaaa", verifyGoogleToken);
-  }, [])
+  const {tweets} = useGetAllTweets()
   return (
-    <main >
-      <div className='grid grid-cols-12 h-screen w-screen'>
-        <SideBar/>
-        <div className='col-span-6 border border-r-[1px] border-l-[1px] border-gray-600'>
-          <TweetCard/>
+        <div className='col-span-6 border border-r-[1px] border-l-[1px] border-gray-600 h-full overflow-auto no-scrollbar'>
+          <AddTweet/>
+          {tweets?.map(tweet => tweet ? <TweetCard key={tweet?.id} tweets={tweet as Tweet} /> : null)}
         </div>
-        <div className='col-span-3 p-5'>
-          <span>New to Twitter?</span>
-          <GoogleLogin onSuccess={handleLogin}/>
-        </div>
-      </div>
-    </main>
   )
 }
