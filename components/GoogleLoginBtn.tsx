@@ -22,7 +22,7 @@ const GoogleLoginBtn = () => {
       toast.success('Logged In')
       if(verifyGoogleToken){
         localStorage.setItem("twitter_clone", verifyGoogleToken)
-        await queryClient.invalidateQueries(["currentUser"]);
+        await queryClient.invalidateQueries({queryKey: ["currentUser"]});
       }
     } catch(err){
       toast.error("Log In Faied")

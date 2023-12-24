@@ -25,12 +25,12 @@ const Profile = () => {
     const handleFollowUser = useCallback( async () => {
         if(!user) return;
         await graphQLClient.request(followUserMutation, { to: user?.id })
-        await queryClient.invalidateQueries(["currentUser"]);
+        await queryClient.invalidateQueries({queryKey: ["currentUser"]});
     }, [queryClient, user])
     const handleUnFollowUser = useCallback( async () => {
         if(!user) return;
         await graphQLClient.request(unfollowUserMutation, { to: user?.id })
-        await queryClient.invalidateQueries(["currentUser"]);
+        await queryClient.invalidateQueries({queryKey: ["currentUser"]});
     }, [queryClient, user])
   return (
     <div className='col-span-6 border border-r-[1px] border-l-[1px] border-gray-600 h-full overflow-auto no-scrollbar'>
